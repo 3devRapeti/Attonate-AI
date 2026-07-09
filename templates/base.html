@@ -12,7 +12,16 @@
     tailwind.config = { darkMode: "class" };
   </script>
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-  <link rel="stylesheet" href="{% static 'css/site.css' %}?v=10" />
+  {% comment %}
+  Served directly from Cloudinary rather than Django's {% static %} /
+  collectstatic pipeline — Vercel's automatic static-asset publishing
+  wasn't picking up STATIC_ROOT's output despite everything checking out
+  (framework detection, STATICFILES_DIRS, STORAGES, a clean collectstatic
+  run confirmed via a shadowed command). Hosting the handful of real static
+  files (this stylesheet, site.js, the logo) on Cloudinary's own CDN
+  sidesteps that entirely.
+  {% endcomment %}
+  <link rel="stylesheet" href="https://res.cloudinary.com/sggtk2mm/raw/upload/v1783641159/site_zt20f3.css" />
 </head>
 <body class="relative bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white font-sans transition-colors duration-500">
 
