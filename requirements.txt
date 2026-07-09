@@ -1,0 +1,18 @@
+Django>=5.0,<6.0
+dj-database-url>=3.0
+psycopg2-binary>=2.9
+whitenoise>=6.7
+django-allauth[socialaccount]>=65.0
+# Pinned explicitly: an unpinned resolver picked a cryptography/PyJWT combo
+# whose compiled Rust extension failed to import (ImportError: cannot import
+# name 'exceptions' from 'cryptography.hazmat.bindings._rust'), which crashed
+# collectstatic outright (allauth.socialaccount eagerly imports the Google
+# provider -> PyJWT -> cryptography at app-ready time). This pin avoids that.
+cryptography>=43.0,<44.0
+PyJWT>=2.9,<3.0
+cloudinary>=1.40
+django-cloudinary-storage>=0.3
+Pillow>=10.0
+python-dotenv>=1.0
+resend>=2.0
+twilio>=9.0

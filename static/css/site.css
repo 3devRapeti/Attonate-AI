@@ -1,0 +1,256 @@
+/* Accent tokens driven by JS (site.js) based on the server-rendered
+   data-mode attribute (user vs client — set per URL, see
+   core.context_processors.site_content) and the light/dark theme toggle.
+   Tailwind (loaded via CDN in base.html) handles everything else, including
+   dark/light via the `dark` class on <html>. */
+
+:root {
+  --accent-border: rgba(16, 185, 129, 0.4);
+  --accent-bg: rgba(16, 185, 129, 0.1);
+  --accent-nav-bg: rgba(13, 157, 110, 0.1);
+  --accent-text: #34d399;
+  --accent-texture: #10b981;
+}
+
+.accent-border {
+  border-color: var(--accent-border) !important;
+}
+
+.accent-bg {
+  background-color: var(--accent-bg) !important;
+}
+
+.accent-text {
+  color: var(--accent-text) !important;
+}
+
+#site-nav {
+  transition: all 0.3s ease;
+}
+
+#site-nav.nav-scrolled {
+  border-color: var(--accent-border);
+  background-color: var(--accent-nav-bg);
+  backdrop-filter: blur(8px);
+}
+
+[data-faq-icon] {
+  transition: transform 0.2s ease;
+}
+
+.annotation-bg rect,
+.annotation-bg circle {
+  stroke: var(--accent-texture);
+  transition: stroke 0.4s ease;
+}
+
+.annotation-bg rect[data-fill="true"] {
+  fill: var(--accent-texture);
+  transition: fill 0.4s ease;
+}
+
+/* Form fields used by the Django-rendered signup/login/account forms. */
+.field-input {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(229 229 229);
+  background: transparent;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.field-input:focus {
+  border-color: var(--accent-border);
+}
+
+html.dark .field-input {
+  border-color: rgb(38 38 38);
+  color: white;
+}
+
+/* ---------------------------------------------------------------------
+   Contact form "sent" animation (see static/js/site.js initContactForms).
+   On a successful submit: flash the panel to a solid accent color, fold
+   it away like a paper plane taking off, then fade a fresh copy of the
+   same panel back in for another submission. Colors ride on the same
+   --accent-texture/--accent-text tokens as everything else, so this is
+   green in user mode and red in client mode automatically.
+   --------------------------------------------------------------------- */
+
+.contact-panel {
+  transition: background-color 0.25s ease;
+}
+
+.contact-panel.contact-flash {
+  background-color: var(--accent-texture) !important;
+}
+
+/* Real form fields are hidden the instant the paper proxy (below) takes
+   over — folding actual <input> elements would just look broken, so the
+   panel itself briefly disappears while its stunt double does the fold. */
+.contact-panel.contact-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------------
+   .contact-paper: a plain solid-color div sized/positioned (via JS) to
+   exactly cover the real form. The fold is an 8-point polygon morph
+   derived directly from an A4-ratio coordinate model (corners at (0,0),
+   (1,0), (1,1.4), (0,1.4), converted to clip-path % via x*100 / (y/1.4)*100):
+
+     0%   flat sheet, with the crease-line vertical bisector already
+          present as extra vertices at (0.5,0)/(0.5,1.4) (Step 1, x=0.5)
+     10%  a bare hint of the axial crease (barely-there dip at 0.5,0)
+     26%  top-left/top-right corners folded down and reflected onto the
+          center axis, meeting exactly at the top apex — Step 2's
+          A'(0.5,0.5)/B'(0.5,0.5) reflection, giving the classic peak
+     42%  the diagonal edges folded inward again (Step 3's angle-bisector
+          taper), narrowing the peaked shape into a tall isosceles triangle
+     58%  the triangle re-centered and slightly compressed — a flattened
+          stand-in for Step 4's 3D 180° fold-in-half (a literal fold along
+          x=0.5 rotated into 3D can't be projected back into a flat
+          clip-path without degenerating into a zero-width sliver, so this
+          keeps the same silhouette narrower/centered instead)
+     76%  swept into a right-pointing dart/plane silhouette — a stylized
+          stand-in for Step 5's wing dihedral fold (again, true 3D dihedral
+          angles have no flat-polygon equivalent)
+     100% same dart, thrown off-screen to the right like it's been sent
+
+   Point *count* (8) and each point's *index role* stay fixed across every
+   keyframe so the browser can tween them smoothly without the shape
+   self-intersecting mid-animation; the whole sequence — including the
+   in-between tween frames a browser actually renders, not just the
+   keyframes above — was plotted and scrubbed to confirm this. Don't
+   hand-edit the polygons without re-checking that.
+   --------------------------------------------------------------------- */
+
+.contact-paper {
+  position: absolute;
+  z-index: 40;
+  background-color: var(--accent-texture);
+  border-radius: 1rem;
+  pointer-events: none;
+}
+
+@keyframes contact-origami {
+  0% {
+    /* flat sheet, corners + edge midpoints (Step 1 crease drawn but not yet folded) */
+    clip-path: polygon(0% 0%, 50% 0%, 100% 0%, 100% 50%, 100% 100%, 50% 100%, 0% 100%, 0% 50%);
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  10% {
+    /* the faintest dip at the crease line before the fold really starts */
+    clip-path: polygon(0% 0%, 50% 4%, 100% 0%, 100% 50%, 100% 100%, 50% 96%, 0% 100%, 0% 50%);
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  26% {
+    /* Step 2: top corners reflected onto the center axis, forming the peak */
+    clip-path: polygon(50% 0%, 50% 0%, 50% 0%, 100% 35.7%, 100% 100%, 50% 100%, 0% 100%, 0% 35.7%);
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  42% {
+    /* Step 3: diagonal edges bisected inward, narrowing to a tall triangle */
+    clip-path: polygon(50% 0%, 50% 0%, 50% 0%, 100% 85.7%, 100% 100%, 50% 100%, 0% 100%, 0% 85.7%);
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  58% {
+    /* Step 4 stand-in: re-centered/compressed, as if folded in half */
+    clip-path: polygon(50% 0%, 50% 0%, 50% 0%, 75% 85.7%, 75% 100%, 50% 100%, 25% 100%, 25% 85.7%);
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  76% {
+    /* Step 5 stand-in: wings swept into a dart, nose pointing right — this
+       is also the plane's heading: the nose (its sharp point) sits at the
+       shape's rightmost vertex, so translating in +x here is "flying
+       nose-first." */
+    clip-path: polygon(35% 15%, 35% 15%, 35% 15%, 100% 50%, 35% 85%, 0% 58%, 15% 50%, 0% 35%);
+    transform: translate(0, 0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  86% {
+    /* flies forward nose-first: almost all horizontal, barely any climb
+       yet — reads as taking off in a straight line before the turn */
+    clip-path: polygon(35% 15%, 35% 15%, 35% 15%, 100% 50%, 35% 85%, 0% 58%, 15% 50%, 0% 35%);
+    transform: translate(var(--fly-mid-x, 90vw), var(--fly-mid-y, -3vh)) rotate(var(--fly-mid-rot, -4deg)) scale(var(--fly-mid-scale, 0.85));
+    opacity: 1;
+  }
+  94% {
+    /* banks into a climbing curve and arrives at the target (nav button,
+       or off-screen as a fallback) — still visible for a beat, as if it's
+       tucking itself in */
+    clip-path: polygon(35% 15%, 35% 15%, 35% 15%, 100% 50%, 35% 85%, 0% 58%, 15% 50%, 0% 35%);
+    transform: translate(var(--fly-x, 170vw), var(--fly-y, -20vh)) rotate(var(--fly-rot, -20deg)) scale(var(--fly-scale, 0.6));
+    opacity: 1;
+  }
+  100% {
+    /* holds position and vanishes — reads as "absorbed" when the target is
+       the Contact Sales nav button (see playSentAnimation in site.js) */
+    clip-path: polygon(35% 15%, 35% 15%, 35% 15%, 100% 50%, 35% 85%, 0% 58%, 15% 50%, 0% 35%);
+    transform: translate(var(--fly-x, 170vw), var(--fly-y, -20vh)) rotate(var(--fly-rot, -20deg)) scale(var(--fly-scale, 0.6));
+    opacity: 0;
+  }
+}
+
+.contact-paper.contact-flying {
+  /* The "--fly-mid-" and "--fly-" custom properties are set inline by JS
+     when the sales form's paper has a real Contact Sales nav button to fly
+     into: --fly-mid-x, --fly-mid-y, --fly-mid-rot and --fly-mid-scale are
+     the "flying forward nose-first" waypoint (86%); --fly-x, --fly-y,
+     --fly-rot and --fly-scale are the final arrival after curving upward
+     (94%/100%). Otherwise the keyframes' fallback values (thrown off to
+     the top-right) apply. */
+  animation: contact-origami 1.45s cubic-bezier(0.5, 0, 0.65, 1) forwards;
+  transform-origin: 85% 50%;
+}
+
+/* ---------------------------------------------------------------------
+   Nav "absorb" flash: a quick ring pulse on the Contact Sales button's
+   border, timed to fire the instant the paper plane vanishes into it.
+   Uses opaque box-shadow spread (0 -> N -> 0) rather than alpha fades so
+   it rides on --accent-texture regardless of mode/theme.
+   --------------------------------------------------------------------- */
+@keyframes nav-absorb-flash {
+  0% {
+    box-shadow: 0 0 0 0 var(--accent-texture);
+    border-color: var(--accent-texture);
+  }
+  45% {
+    box-shadow: 0 0 0 5px var(--accent-texture);
+    border-color: var(--accent-texture);
+  }
+  100% {
+    box-shadow: 0 0 0 0 var(--accent-texture);
+    border-color: var(--accent-border);
+  }
+}
+
+#contact-sales-nav-btn.nav-absorb-flash {
+  animation: nav-absorb-flash 0.6s ease-out;
+}
+
+@keyframes contact-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.contact-panel.contact-entering {
+  animation: contact-enter 0.45s ease-out;
+}
+
+[data-contact-status] {
+  transition: opacity 0.4s ease;
+}

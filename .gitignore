@@ -1,0 +1,44 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+.env
+.env.local
+
+# Python / Django
+__pycache__/
+*.pyc
+db.sqlite3
+staticfiles/
+uv.lock
+.python-version
+.vercel/
+pyproject.toml
+
+# User-uploaded media now lives on Cloudinary, not the local filesystem —
+# nothing should land in media/ in production, and the old local dev copies
+# shouldn't be committed either.
+media/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+.vercel
+.env*

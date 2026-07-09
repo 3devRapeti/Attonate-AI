@@ -1,0 +1,330 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Account — Taxon AI{% endblock %}
+
+{% block nav %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block profile_banner %}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen">
+
+  {# ---- Minimal header: logo + home link only, no site nav ---- #}
+  <div class="border-b border-neutral-200 dark:border-neutral-800">
+    <div class="max-w-4xl mx-auto px-8 py-4 flex items-center gap-4">
+      <a href="{% url 'core:home' %}" class="flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i> Home
+      </a>
+      <div class="flex-1"></div>
+      <img src="{% static 'images/logo-attonate.png' %}" alt="Attonate" class="h-6 object-contain" />
+    </div>
+  </div>
+
+  {% if messages %}
+  <div class="max-w-4xl mx-auto px-8 pt-6 space-y-2">
+    {% for message in messages %}
+    <div class="text-sm rounded-lg px-4 py-3 border {% if message.tags == 'error' %}border-rose-500/40 text-rose-500 bg-rose-500/10{% else %}border-emerald-500/40 text-emerald-500 bg-emerald-500/10{% endif %}">
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="max-w-4xl mx-auto px-8 py-10">
+    <h1 class="text-2xl font-bold mb-1">Account</h1>
+    <p class="text-sm text-neutral-500 mb-6">
+      Manage your profile, work eligibility, availability, and notification preferences.
+    </p>
+
+    {% if not profile_complete %}
+    <div class="flex items-center gap-2 text-sm rounded-lg px-4 py-3 border border-amber-500/40 text-amber-500 bg-amber-500/10 mb-6">
+      <i data-lucide="alert-triangle" class="w-4 h-4 shrink-0"></i>
+      Full name, citizenship, and work authorization status are required before you can use the rest of the site.
+    </div>
+    {% endif %}
+
+    {# ---- Section bookmarks / tabs ---- #}
+    <div id="account-tabs" class="flex flex-wrap gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-4 mb-8">
+      {% for section in sections %}
+      <button
+        data-account-tab="{{ section.section_id }}"
+        class="px-4 py-2 rounded-full text-sm font-medium border border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
+      >
+        {{ section.section_label }}
+      </button>
+      {% endfor %}
+      <button data-account-tab="danger" class="px-4 py-2 rounded-full text-sm font-medium border border-transparent text-rose-500 hover:bg-rose-500/10 transition-colors">
+        Danger Zone
+      </button>
+    </div>
+
+    {# ---- Profile pane (includes read-only rating) ---- #}
+    <div data-account-pane="profile" class="space-y-6 hidden">
+      <div class="border rounded-2xl p-6 flex items-center justify-between border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <i data-lucide="star" class="w-4 h-4"></i>
+            <h2 class="text-sm font-semibold">A-Rating</h2>
+          </div>
+          <p class="text-xs text-neutral-500">
+            {% if profile.rating_label %}Based on your review history and task quality. Set by Taxon, not editable.{% else %}Not yet rated — complete a few tasks to earn your rating.{% endif %}
+          </p>
+        </div>
+        {% if profile.rating_label %}<div class="text-2xl font-bold accent-text">{{ profile.rating_label }}</div>{% endif %}
+      </div>
+
+      <form method="post" enctype="multipart/form-data" class="border rounded-2xl p-6 border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="section" value="profile" />
+        <div class="flex items-center gap-2 mb-1">
+          <i data-lucide="camera" class="w-4 h-4"></i>
+          <h2 class="text-sm font-semibold">Profile photo & name</h2>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="w-16 h-16 rounded-full overflow-hidden border flex items-center justify-center shrink-0 border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-800">
+            {% if profile.photo %}
+            <img src="{{ profile.photo.url }}" alt="Profile" class="w-full h-full object-cover" />
+            {% else %}
+            <i data-lucide="user" class="w-6 h-6 text-neutral-400"></i>
+            {% endif %}
+          </div>
+          <label class="text-sm font-medium px-4 py-2 rounded-full cursor-pointer bg-neutral-100 dark:bg-neutral-800 hover:opacity-80 transition-opacity">
+            {{ forms_by_section.profile.photo }}
+            Upload photo
+          </label>
+        </div>
+        <div>
+          <label class="text-xs font-medium block mb-1.5 text-neutral-500">Full name <span class="text-rose-500">*</span></label>
+          {{ forms_by_section.profile.display_name }}
+          {% if forms_by_section.profile.display_name.errors %}
+          <p class="text-xs text-rose-500 mt-1">{{ forms_by_section.profile.display_name.errors.0 }}</p>
+          {% endif %}
+        </div>
+        <button type="submit" class="flex items-center gap-2 text-sm font-medium px-5 py-2.5 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black hover:opacity-90 transition-opacity">
+          <i data-lucide="save" class="w-4 h-4"></i> Save
+        </button>
+      </form>
+    </div>
+
+    {# ---- Work Eligibility pane ---- #}
+    <div data-account-pane="eligibility" class="hidden">
+      <form method="post" class="border rounded-2xl p-6 border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="section" value="eligibility" />
+        <div class="flex items-center gap-2 mb-1">
+          <i data-lucide="globe" class="w-4 h-4"></i>
+          <h2 class="text-sm font-semibold">Citizenship & work authorization</h2>
+        </div>
+        <div>
+          <label class="text-xs font-medium block mb-1.5 text-neutral-500">Country of citizenship <span class="text-rose-500">*</span></label>
+          {{ forms_by_section.eligibility.citizenship }}
+          {% if forms_by_section.eligibility.citizenship.errors %}
+          <p class="text-xs text-rose-500 mt-1">{{ forms_by_section.eligibility.citizenship.errors.0 }}</p>
+          {% endif %}
+        </div>
+        <div>
+          <label class="text-xs font-medium block mb-1.5 text-neutral-500">Work authorization status <span class="text-rose-500">*</span></label>
+          {{ forms_by_section.eligibility.visa_status }}
+          {% if forms_by_section.eligibility.visa_status.errors %}
+          <p class="text-xs text-rose-500 mt-1">{{ forms_by_section.eligibility.visa_status.errors.0 }}</p>
+          {% endif %}
+        </div>
+        <div>
+          <label class="text-xs font-medium block mb-1.5 text-neutral-500">Work authorization expiry (if applicable)</label>
+          {{ forms_by_section.eligibility.work_auth_expiry }}
+        </div>
+        <button type="submit" class="flex items-center gap-2 text-sm font-medium px-5 py-2.5 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black hover:opacity-90 transition-opacity">
+          <i data-lucide="save" class="w-4 h-4"></i> Save
+        </button>
+      </form>
+    </div>
+
+    {# ---- Work Info pane ---- #}
+    <div data-account-pane="work" class="hidden">
+      <form method="post" enctype="multipart/form-data" class="border rounded-2xl p-6 border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="section" value="work" />
+        <div class="flex items-center gap-2 mb-1">
+          <i data-lucide="briefcase" class="w-4 h-4"></i>
+          <h2 class="text-sm font-semibold">Work information</h2>
+        </div>
+        <div>
+          <label class="text-xs font-medium block mb-1.5 text-neutral-500">Job title / role</label>
+          {{ forms_by_section.work.job_title }}
+        </div>
+        <div>
+          <label class="text-xs font-medium block mb-1.5 text-neutral-500">Years of experience</label>
+          {{ forms_by_section.work.years_experience }}
+        </div>
+        <div>
+          <label class="text-xs font-medium block mb-1.5 text-neutral-500">Skills (comma-separated)</label>
+          {{ forms_by_section.work.skills }}
+        </div>
+        <div>
+          <label class="text-xs font-medium block mb-1.5 text-neutral-500">Resume</label>
+          <div class="flex items-center gap-3">
+            <label class="flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-full cursor-pointer bg-neutral-100 dark:bg-neutral-800 hover:opacity-80 transition-opacity">
+              <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+              {{ forms_by_section.work.resume }}
+              {% if profile.resume %}Change file{% else %}Upload resume{% endif %}
+            </label>
+            {% if profile.resume %}
+            <a href="{{ profile.resume.url }}" class="flex items-center gap-1.5 text-xs text-neutral-500 hover:underline">
+              <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Resume on file
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        <button type="submit" class="flex items-center gap-2 text-sm font-medium px-5 py-2.5 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black hover:opacity-90 transition-opacity">
+          <i data-lucide="save" class="w-4 h-4"></i> Save
+        </button>
+      </form>
+    </div>
+
+    {# ---- Availability pane ---- #}
+    <div data-account-pane="availability" class="hidden">
+      <form method="post" class="border rounded-2xl p-6 border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="section" value="availability" />
+        <div class="flex items-center gap-2 mb-1">
+          <i data-lucide="calendar-check" class="w-4 h-4"></i>
+          <h2 class="text-sm font-semibold">Availability</h2>
+        </div>
+        <div>
+          <label class="text-xs font-medium block mb-1.5 text-neutral-500">Hours available per week</label>
+          {{ forms_by_section.availability.availability_hours }}
+        </div>
+        <div>
+          <label class="text-xs font-medium block mb-1.5 text-neutral-500">Timezone</label>
+          {{ forms_by_section.availability.timezone }}
+        </div>
+        <div>
+          <label class="text-xs font-medium block mb-2 text-neutral-500">Days available</label>
+          <div class="flex flex-wrap gap-4">
+            {% for checkbox in forms_by_section.availability.available_days %}
+            <label class="flex items-center gap-1.5 text-xs">
+              {{ checkbox.tag }} {{ checkbox.choice_label }}
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+        <button type="submit" class="flex items-center gap-2 text-sm font-medium px-5 py-2.5 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black hover:opacity-90 transition-opacity">
+          <i data-lucide="save" class="w-4 h-4"></i> Save
+        </button>
+      </form>
+    </div>
+
+    {# ---- Pay pane ---- #}
+    <div data-account-pane="pay" class="hidden">
+      <form method="post" class="border rounded-2xl p-6 border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 space-y-2">
+        {% csrf_token %}
+        <input type="hidden" name="section" value="pay" />
+        <div class="flex items-center gap-2 mb-1">
+          <i data-lucide="banknote" class="w-4 h-4"></i>
+          <h2 class="text-sm font-semibold">Pay preferences</h2>
+        </div>
+        <label class="text-xs font-medium block mb-1.5 text-neutral-500">Minimum acceptable pay ($/hr)</label>
+        {{ forms_by_section.pay.min_pay }}
+        <p class="text-xs text-neutral-500 mb-3">You won't be shown tasks paying below this rate once matching is live.</p>
+        <button type="submit" class="flex items-center gap-2 text-sm font-medium px-5 py-2.5 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black hover:opacity-90 transition-opacity">
+          <i data-lucide="save" class="w-4 h-4"></i> Save
+        </button>
+      </form>
+    </div>
+
+    {# ---- Notifications pane ---- #}
+    <div data-account-pane="notifications" class="hidden">
+      <form method="post" class="border rounded-2xl p-6 border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="section" value="notifications" />
+        <div class="flex items-center gap-2 mb-1">
+          <i data-lucide="bell" class="w-4 h-4"></i>
+          <h2 class="text-sm font-semibold">Notification preferences</h2>
+        </div>
+        <label class="flex items-center justify-between text-sm">
+          <span>Pause all notifications</span> {{ forms_by_section.notifications.notifications_paused }}
+        </label>
+        <hr class="border-neutral-200 dark:border-neutral-800" />
+        <label class="flex items-center justify-between text-sm">
+          <span>Email notifications</span> {{ forms_by_section.notifications.notify_email }}
+        </label>
+        <label class="flex items-center justify-between text-sm">
+          <span>SMS notifications</span> {{ forms_by_section.notifications.notify_sms }}
+        </label>
+        <label class="flex items-center justify-between text-sm">
+          <span>Weekly project digest</span> {{ forms_by_section.notifications.notify_project_digest }}
+        </label>
+        <hr class="border-neutral-200 dark:border-neutral-800" />
+        <div>
+          <label class="text-xs font-medium block mb-1.5 text-neutral-500 flex items-center gap-1.5">
+            <i data-lucide="bell-off" class="w-3.5 h-3.5"></i> Muted projects
+          </label>
+          {{ forms_by_section.notifications.muted_projects }}
+          <p class="text-xs text-neutral-400 mt-1">{{ forms_by_section.notifications.muted_projects.help_text }}</p>
+        </div>
+        <button type="submit" class="flex items-center gap-2 text-sm font-medium px-5 py-2.5 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black hover:opacity-90 transition-opacity">
+          <i data-lucide="save" class="w-4 h-4"></i> Save
+        </button>
+      </form>
+    </div>
+
+    {# ---- Danger zone pane ---- #}
+    <div data-account-pane="danger" class="hidden">
+      <div class="border rounded-2xl p-6 border-rose-500/30">
+        <div class="flex items-center gap-2 mb-2 text-rose-500">
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
+          <h2 class="text-sm font-semibold">Delete account</h2>
+        </div>
+        <p class="text-xs mb-4 text-neutral-500">
+          This permanently deletes your profile, resume, photo, and sign-in — it can't be undone.
+        </p>
+        <a href="{% url 'accounts:delete_account' %}" class="inline-block text-sm font-medium px-4 py-2 rounded-full border border-rose-500/40 text-rose-500 hover:bg-rose-500/10 transition-colors">
+          Delete my account
+        </a>
+        <div class="mt-6 pt-6 border-t border-neutral-200 dark:border-neutral-800">
+          <a href="{% url 'accounts:export_data' %}" class="flex items-center gap-2 text-sm font-medium px-5 py-2.5 rounded-full border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors w-fit">
+            <i data-lucide="download" class="w-4 h-4"></i> Export my data
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function initAccountTabs() {
+    const tabs = document.querySelectorAll("[data-account-tab]");
+    const panes = document.querySelectorAll("[data-account-pane]");
+    if (!tabs.length || !panes.length) return;
+
+    function activate(sectionId) {
+      panes.forEach((p) => p.classList.toggle("hidden", p.getAttribute("data-account-pane") !== sectionId));
+      tabs.forEach((t) => {
+        const active = t.getAttribute("data-account-tab") === sectionId;
+        t.classList.toggle("accent-active", active);
+        t.classList.toggle("border-neutral-200", !active);
+        t.classList.toggle("dark:border-neutral-800", !active);
+      });
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const id = tab.getAttribute("data-account-tab");
+        history.replaceState(null, "", `#${id}`);
+        activate(id);
+      });
+    });
+
+    const initial = window.location.hash ? window.location.hash.slice(1) : tabs[0].getAttribute("data-account-tab");
+    activate(document.querySelector(`[data-account-pane="${initial}"]`) ? initial : tabs[0].getAttribute("data-account-tab"));
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    initAccountTabs();
+    if (window.lucide) lucide.createIcons();
+  });
+</script>
+{% endblock %}

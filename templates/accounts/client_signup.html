@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Create a client account — Taxon AI{% endblock %}
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center px-8 py-16">
+  <div class="w-full max-w-md">
+    <h1 class="text-2xl font-bold mb-1">Create a client account</h1>
+    <p class="text-sm text-neutral-500 mb-8">
+      Tell us a bit about your company so we can match you with the right annotators.
+    </p>
+
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+      <div class="text-sm text-rose-500">{{ form.non_field_errors.0 }}</div>
+      {% endif %}
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-xs font-medium block mb-1.5 text-neutral-500">Your name</label>
+          {{ form.full_name }}
+          {% if form.full_name.errors %}<p class="text-xs text-rose-500 mt-1">{{ form.full_name.errors.0 }}</p>{% endif %}
+        </div>
+        <div>
+          <label class="text-xs font-medium block mb-1.5 text-neutral-500">Position</label>
+          {{ form.position }}
+          {% if form.position.errors %}<p class="text-xs text-rose-500 mt-1">{{ form.position.errors.0 }}</p>{% endif %}
+        </div>
+      </div>
+
+      <div>
+        <label class="text-xs font-medium block mb-1.5 text-neutral-500">Company</label>
+        {{ form.company_name }}
+        {% if form.company_name.errors %}<p class="text-xs text-rose-500 mt-1">{{ form.company_name.errors.0 }}</p>{% endif %}
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-xs font-medium block mb-1.5 text-neutral-500">Sector</label>
+          {{ form.sector }}
+          {% if form.sector.errors %}<p class="text-xs text-rose-500 mt-1">{{ form.sector.errors.0 }}</p>{% endif %}
+        </div>
+        <div>
+          <label class="text-xs font-medium block mb-1.5 text-neutral-500">Country</label>
+          {{ form.country }}
+          {% if form.country.errors %}<p class="text-xs text-rose-500 mt-1">{{ form.country.errors.0 }}</p>{% endif %}
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-xs font-medium block mb-1.5 text-neutral-500">Company size <span class="text-neutral-400">(optional)</span></label>
+          {{ form.company_size }}
+        </div>
+        <div>
+          <label class="text-xs font-medium block mb-1.5 text-neutral-500">Website <span class="text-neutral-400">(optional)</span></label>
+          {{ form.company_website }}
+          {% if form.company_website.errors %}<p class="text-xs text-rose-500 mt-1">{{ form.company_website.errors.0 }}</p>{% endif %}
+        </div>
+      </div>
+
+      <hr class="border-neutral-200 dark:border-neutral-800" />
+
+      <div>
+        <label class="text-xs font-medium block mb-1.5 text-neutral-500">Work email</label>
+        {{ form.email }}
+        {% if form.email.errors %}<p class="text-xs text-rose-500 mt-1">{{ form.email.errors.0 }}</p>{% endif %}
+      </div>
+      <div>
+        <label class="text-xs font-medium block mb-1.5 text-neutral-500">Phone number</label>
+        {{ form.phone_number }}
+        {% if form.phone_number.errors %}<p class="text-xs text-rose-500 mt-1">{{ form.phone_number.errors.0 }}</p>{% endif %}
+      </div>
+      <div>
+        <label class="text-xs font-medium block mb-1.5 text-neutral-500">Password</label>
+        {{ form.password1 }}
+        {% if form.password1.errors %}<p class="text-xs text-rose-500 mt-1">{{ form.password1.errors.0 }}</p>{% endif %}
+      </div>
+      <div>
+        <label class="text-xs font-medium block mb-1.5 text-neutral-500">Confirm password</label>
+        {{ form.password2 }}
+        {% if form.password2.errors %}<p class="text-xs text-rose-500 mt-1">{{ form.password2.errors.0 }}</p>{% endif %}
+      </div>
+
+      <button type="submit" class="w-full py-2.5 rounded-full text-sm font-medium bg-neutral-900 text-white dark:bg-white dark:text-black hover:opacity-90 transition-opacity">
+        Create client account
+      </button>
+    </form>
+
+    <p class="text-sm text-neutral-500 mt-6">
+      Already have an account? <a href="{% url 'accounts:login' %}" class="accent-text font-medium">Sign in</a>
+    </p>
+    <p class="text-sm text-neutral-500 mt-2">
+      Looking for annotation work instead? <a href="{% url 'accounts:signup' %}" class="accent-text font-medium">Create a user account</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
