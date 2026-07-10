@@ -7,6 +7,8 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
+from core.notify import notify_admin
+
 from . import otp
 from .forms import (
     PROFILE_SECTION_FORMS,
@@ -37,6 +39,10 @@ def signup_view(request):
             user.account_type = "user"
             user.save(update_fields=["account_type"])
             Profile.objects.create(user=user, display_name="")
+            notify_admin(
+                "New user signup",
+                [("Email", user.email), ("Phone", user.phone_number)],
+            )
             login(request, user, backend=_LOGIN_BACKEND)
             messages.success(request, "Welcome to Taxon AI — let's finish setting up your profile.")
             return redirect("accounts:account")
@@ -54,6 +60,18 @@ def client_signup_view(request):
         form = ClientSignupForm(request.POST)
         if form.is_valid():
             user = form.save()  # also creates the ClientProfile — see the form's save()
+            notify_admin(
+                f"New client signup — {form.cleaned_data['company_name']}",
+                [
+                    ("Name", form.cleaned_data["full_name"]),
+                    ("Company", form.cleaned_data["company_name"]),
+                    ("Position", form.cleaned_data["position"]),
+                    ("Email", user.email),
+                    ("Phone", user.phone_number),
+                    ("Sector", form.cleaned_data["sector"]),
+                    ("Country", form.cleaned_data["country"]),
+                ],
+            )
             login(request, user, backend=_LOGIN_BACKEND)
             messages.success(request, "Welcome to Taxon AI — our team will be in touch shortly.")
             return redirect("core:client_home")

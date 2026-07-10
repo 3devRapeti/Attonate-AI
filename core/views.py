@@ -8,6 +8,7 @@ from accounts.forms import profile_is_complete
 from accounts.models import Profile
 
 from .forms import ContactSalesForm, SupportRequestForm
+from .notify import notify_admin
 from .utils import get_current_mode
 
 
@@ -36,7 +37,16 @@ def _handle_contact_forms(request):
     if request.method == "POST" and request.POST.get("form_name") == "contact_sales":
         contact_sales_form = ContactSalesForm(request.POST)
         if contact_sales_form.is_valid():
-            contact_sales_form.save()
+            lead = contact_sales_form.save()
+            notify_admin(
+                f"New Contact Sales lead — {lead.lab_name or lead.name}",
+                [
+                    ("Name", lead.name),
+                    ("Lab / company", lead.lab_name),
+                    ("Email", lead.email),
+                    ("Phone", lead.phone_number),
+                ],
+            )
             if ajax:
                 return JsonResponse({"ok": True, "message": "Thanks — we'll be in touch shortly."})
             messages.success(request, "Thanks — we'll be in touch shortly.")
@@ -56,6 +66,16 @@ def _handle_contact_forms(request):
                 support_request.name = ""
                 support_request.email = request.user.email
             support_request.save()
+            notify_admin(
+                f"New support request — {support_request.get_reason_display()}",
+                [
+                    ("From", support_request.name or support_request.email),
+                    ("Email", support_request.email),
+                    ("Reason", support_request.get_reason_display()),
+                    ("Mode", support_request.submitted_mode),
+                    ("Message", support_request.message),
+                ],
+            )
             if ajax:
                 return JsonResponse({"ok": True, "message": "Support request sent — we'll follow up by email."})
             messages.success(request, "Support request sent — we'll follow up by email.")
