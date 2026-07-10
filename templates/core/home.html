@@ -123,6 +123,13 @@ reliably serve STATIC_ROOT output for this project).
 </section>
 
 {# ---------------- Dashboard preview (static mockup, always dark) ---------------- #}
+{% comment %}
+Hidden for now — the "Product screenshot placeholder" box is dummy
+content with no real product screenshot behind it yet. Re-enable by
+removing this {% comment %} wrapper once there's an actual screenshot to
+show, or wire it up to a real image.
+{% endcomment %}
+{% comment %}
 <section class="px-8 py-16 max-w-6xl mx-auto">
   <h2 class="text-2xl font-bold mb-2">{{ mode_data.dashboard.heading }}</h2>
   <p class="text-neutral-500 mb-8 max-w-2xl">{{ mode_data.dashboard.subtext }}</p>
@@ -130,6 +137,7 @@ reliably serve STATIC_ROOT output for this project).
     <p class="text-neutral-500 text-sm">Product screenshot placeholder</p>
   </div>
 </section>
+{% endcomment %}
 
 {# ---------------- Extra: security grid (client) or earnings table (user) ---------------- #}
 <section class="px-8 py-16 max-w-6xl mx-auto">
