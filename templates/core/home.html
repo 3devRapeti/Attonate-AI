@@ -28,13 +28,13 @@ just behind the hero — no per-section SVG needed here anymore.
         {{ mode_data.hero.cta }}
       </a>
       {% else %}
-      <button class="px-6 py-3 rounded-full text-sm font-medium bg-neutral-900 text-white dark:bg-white dark:text-black hover:opacity-90 transition-opacity">
+      <a href="{% url 'core:coming_soon' %}" class="px-6 py-3 rounded-full text-sm font-medium bg-neutral-900 text-white dark:bg-white dark:text-black hover:opacity-90 transition-opacity">
         {{ mode_data.hero.cta }}
-      </button>
+      </a>
       {% endif %}
-      <button class="flex items-center gap-2 text-sm font-medium text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors">
+      <a href="{% url 'core:coming_soon' %}" class="flex items-center gap-2 text-sm font-medium text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors">
         <i data-lucide="play" class="w-4 h-4"></i> Watch overview
-      </button>
+      </a>
     </div>
   </div>
 </section>
@@ -74,9 +74,9 @@ just behind the hero — no per-section SVG needed here anymore.
         <h3 class="font-semibold text-lg mb-2">{{ f.title }}</h3>
         <p class="text-sm text-neutral-600 dark:text-neutral-400">{{ f.desc }}</p>
       </div>
-      <button class="mt-6 text-sm font-medium flex items-center gap-1 self-start accent-text">
+      <a href="{% url 'core:coming_soon' %}" class="mt-6 text-sm font-medium flex items-center gap-1 self-start accent-text">
         {{ f.cta }} <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-      </button>
+      </a>
     </div>
     {% endfor %}
   </div>
@@ -159,9 +159,9 @@ just behind the hero — no per-section SVG needed here anymore.
     {% if current_mode == "user" %}
     <a href="{% url 'core:apply' %}" class="px-6 py-3 rounded-full text-sm font-medium bg-neutral-900 text-white dark:bg-white dark:text-black hover:opacity-90 transition-opacity">{{ mode_data.cta.primary }}</a>
     {% else %}
-    <button class="px-6 py-3 rounded-full text-sm font-medium bg-neutral-900 text-white dark:bg-white dark:text-black hover:opacity-90 transition-opacity">{{ mode_data.cta.primary }}</button>
+    <a href="{% url 'core:coming_soon' %}" class="px-6 py-3 rounded-full text-sm font-medium bg-neutral-900 text-white dark:bg-white dark:text-black hover:opacity-90 transition-opacity">{{ mode_data.cta.primary }}</a>
     {% endif %}
-    <button class="px-6 py-3 rounded-full text-sm font-medium border border-neutral-300 dark:border-neutral-700">{{ mode_data.cta.secondary }}</button>
+    <a href="{% url 'core:coming_soon' %}" class="px-6 py-3 rounded-full text-sm font-medium border border-neutral-300 dark:border-neutral-700">{{ mode_data.cta.secondary }}</a>
   </div>
 </section>
 

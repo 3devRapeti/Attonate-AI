@@ -99,6 +99,17 @@ def client_home(request):
     })
 
 
+def coming_soon_view(request):
+    """
+    Shared landing spot for every not-yet-built feature (client dashboard,
+    footer links, secondary CTAs, etc). Open to everyone — no reason to
+    gate a placeholder page — and points people at Contact Sales so
+    interested visitors/clients still turn into a real lead instead of a
+    dead end.
+    """
+    return render(request, "core/coming_soon.html")
+
+
 @login_required
 def apply_view(request):
     """
