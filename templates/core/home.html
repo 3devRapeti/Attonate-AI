@@ -39,6 +39,32 @@ just behind the hero — no per-section SVG needed here anymore.
   </div>
 </section>
 
+{# ---------------- Trusted by ---------------- #}
+{% comment %}
+Each logo has a real light + dark pair now, swapped via Tailwind's dark:
+variant (darkMode: "class", toggled by static/js/site.js) — light-theme
+img shown by default, hidden and replaced by the dark-theme img when the
+dark class is active. Hosted on Cloudinary directly (same reasoning as
+site.css/js/logo in base.html — Vercel's static-asset publishing doesn't
+reliably serve STATIC_ROOT output for this project).
+{% endcomment %}
+<section class="px-8 py-12 max-w-6xl mx-auto">
+  <p class="text-center text-xs font-medium uppercase tracking-wider text-neutral-400 mb-8">Trusted by teams at</p>
+  <div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-6 opacity-80">
+    <img src="https://res.cloudinary.com/sggtk2mm/image/upload/v1783647386/datacurve-light_fu5c5k.png" alt="Datacurve" class="h-6 md:h-7 object-contain block dark:hidden" />
+    <img src="https://res.cloudinary.com/sggtk2mm/image/upload/v1783646766/datacurve-dark_eeychd.png" alt="Datacurve" class="h-6 md:h-7 object-contain hidden dark:block" />
+
+    <img src="https://res.cloudinary.com/sggtk2mm/image/upload/v1783647386/abundant-light_gs1nhv.png" alt="Abundant" class="h-6 md:h-7 object-contain block dark:hidden" />
+    <img src="https://res.cloudinary.com/sggtk2mm/image/upload/v1783646766/abundant-dark_kv5xst.png" alt="Abundant" class="h-6 md:h-7 object-contain hidden dark:block" />
+
+    <img src="https://res.cloudinary.com/sggtk2mm/image/upload/v1783647387/datallm-light_nmvcz2.png" alt="The LLM Data Company" class="h-6 md:h-7 object-contain block dark:hidden" />
+    <img src="https://res.cloudinary.com/sggtk2mm/image/upload/v1783646766/datallm-dark_al8ayh.png" alt="The LLM Data Company" class="h-6 md:h-7 object-contain hidden dark:block" />
+
+    <img src="https://res.cloudinary.com/sggtk2mm/image/upload/v1783647387/afterquery-light_ako3pb.png" alt="AfterQuery" class="h-6 md:h-7 object-contain block dark:hidden" />
+    <img src="https://res.cloudinary.com/sggtk2mm/image/upload/v1783646811/afterquery-dark_e0vvsq.png" alt="AfterQuery" class="h-6 md:h-7 object-contain hidden dark:block" />
+  </div>
+</section>
+
 {# ---------------- Impact statement (user mode only) ---------------- #}
 {% if mode_data.impact %}
 <section class="px-8 py-16 max-w-4xl mx-auto text-center">
