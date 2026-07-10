@@ -44,7 +44,7 @@ def signup_view(request):
                 [("Email", user.email), ("Phone", user.phone_number)],
             )
             login(request, user, backend=_LOGIN_BACKEND)
-            messages.success(request, "Welcome to Taxon AI — let's finish setting up your profile.")
+            messages.success(request, "Welcome to Attonate — let's finish setting up your profile.")
             return redirect("accounts:account")
     else:
         form = SignupForm()
@@ -73,7 +73,7 @@ def client_signup_view(request):
                 ],
             )
             login(request, user, backend=_LOGIN_BACKEND)
-            messages.success(request, "Welcome to Taxon AI — our team will be in touch shortly.")
+            messages.success(request, "Welcome to Attonate — our team will be in touch shortly.")
             return redirect("core:client_home")
     else:
         form = ClientSignupForm()

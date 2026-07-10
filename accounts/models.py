@@ -122,7 +122,7 @@ class Profile(models.Model):
     timezone = models.CharField(max_length=100, blank=True)
     available_days = models.JSONField(default=list, blank=True)
 
-    # Rating — set by Taxon, not user-editable
+    # Rating — set by Attonate, not user-editable
     rating = models.FloatField(blank=True, null=True)
 
     # Pay preference

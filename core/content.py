@@ -1,6 +1,7 @@
 """
-Real marketing copy for the Taxon AI site, carried over verbatim from the
-original React component (TaxonLanding.jsx). No fabricated stats or
+Real marketing copy for the Attonate site, carried over verbatim from the
+original React component (TaxonLanding.jsx — the codebase's original
+working name before the Attonate rebrand). No fabricated stats or
 testimonials — per an earlier explicit decision, this is an early-stage
 company and the copy reflects genuine commitments/policies instead of a
 track record we don't have yet.
@@ -127,7 +128,7 @@ CONTENT = {
         },
         "faq": [
             {
-                "q": "What types of data can Taxon label?",
+                "q": "What types of data can Attonate label?",
                 "a": "Image, text, audio, video, and multimodal data — including bounding boxes, segmentation, transcription, and RLHF preference ranking.",
             },
             {
@@ -140,7 +141,7 @@ CONTENT = {
             },
             {
                 "q": "Can we bring our own annotation tool?",
-                "a": "Yes. Taxon integrates via API, or your team can use our native annotation workspace out of the box.",
+                "a": "Yes. Attonate integrates via API, or your team can use our native annotation workspace out of the box.",
             },
         ],
         "cta": {

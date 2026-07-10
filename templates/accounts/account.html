@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Account — Taxon AI{% endblock %}
+{% block title %}Account — Attonate{% endblock %}
 
 {% block nav %}{% endblock %}
 {% block footer %}{% endblock %}
@@ -67,7 +67,7 @@
             <h2 class="text-sm font-semibold">A-Rating</h2>
           </div>
           <p class="text-xs text-neutral-500">
-            {% if profile.rating_label %}Based on your review history and task quality. Set by Taxon, not editable.{% else %}Not yet rated — complete a few tasks to earn your rating.{% endif %}
+            {% if profile.rating_label %}Based on your review history and task quality. Set by Attonate, not editable.{% else %}Not yet rated — complete a few tasks to earn your rating.{% endif %}
           </p>
         </div>
         {% if profile.rating_label %}<div class="text-2xl font-bold accent-text">{{ profile.rating_label }}</div>{% endif %}

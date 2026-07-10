@@ -1,5 +1,5 @@
 """
-Django settings for the Taxon AI site.
+Django settings for the Attonate site.
 
 This replaces the earlier React + Firebase stack. Classic Django: server-
 rendered templates, Django's built-in auth, Django admin for managing users.

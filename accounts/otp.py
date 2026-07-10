@@ -17,7 +17,7 @@ env vars are added — no other code changes needed.
 Required env vars (add to .env — see taxonsite/settings.py for how it's
 loaded):
   RESEND_API_KEY          - from https://resend.com (free tier: 3k/mo)
-  OTP_FROM_EMAIL          - e.g. "Taxon AI <onboarding@resend.dev>" (Resend's
+  OTP_FROM_EMAIL          - e.g. "Attonate <onboarding@resend.dev>" (Resend's
                             shared test domain works until you verify your
                             own domain with them)
   TWILIO_ACCOUNT_SID      - from the Twilio console
@@ -124,13 +124,13 @@ def send_email_otp(user):
     import resend  # imported lazily so the package is only required once configured
 
     resend.api_key = api_key
-    from_email = os.environ.get("OTP_FROM_EMAIL", "Taxon AI <onboarding@resend.dev>")
+    from_email = os.environ.get("OTP_FROM_EMAIL", "Attonate <onboarding@resend.dev>")
     try:
         resend.Emails.send(
             {
                 "from": from_email,
                 "to": user.email,
-                "subject": "Your Taxon AI verification code",
+                "subject": "Your Attonate verification code",
                 "html": (
                     f"<p>Your verification code is <strong>{code}</strong>.</p>"
                     f"<p>It expires in {OTP_TTL_MINUTES} minutes.</p>"
